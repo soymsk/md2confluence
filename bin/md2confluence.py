@@ -1,9 +1,10 @@
 import argparse
-import mistune
-import re
+import os
 import sys
-import textwrap
 
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/../lib'))
+
+import mdparser
 
 def _help():
     print(
@@ -12,36 +13,22 @@ def _help():
     """.format(sys.argv[0]))
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert markdown to confluence html.')
-    parser.add_argument('file', type=str)
-    parser.add_argument('--user')
-    parser.add_argument('--pass')
-    parser.add_argument('--id')
-    parser.add_argument('--parent-id')
+    argparser = argparse.ArgumentParser(description='Convert markdown to confluence html.')
+    argparser.add_argument('file', type=str)
+    argparser.add_argument('--user')
+    argparser.add_argument('--pass')
+    argparser.add_argument('--id')
+    argparser.add_argument('--parent-id')
 
-    args = parser.parse_args()
+    args = argparser.parse_args()
     # print(args.accumulate(args.integers))
 
-    html = mistune.markdown(open(args.file).read(), renderer=ConfluenceRenderer())
+    html = mdparser.parse(open(args.file).read())
 
     print(html)
 
-
 def upload(html, id=None, pid=None, user=None, password=None):
     pass
-
-
-class ConfluenceRenderer(mistune.Renderer):
-    def block_code(self, code, lang):
-        return textwrap.dedent('''\
-            <ac:structured-macro ac:name="code" ac:schema-version="1">
-                <ac:parameter ac:name="language">{l}</ac:parameter>
-                <ac:plain-text-body><![CDATA[{c}]]></ac:plain-text-body>
-            </ac:structured-macro>
-        ''').format(c=code, l=lang or '')
-
-    def linebreak(self):
-        return '<br />\n'
 
 
 main()

@@ -1,6 +1,3 @@
 #! /bin/bash
 eval "$(pyenv init -)"
-
-export PYTHONPATH=./lib
-# python ./bin/md2confluence.py ./tests/test.md
 python ./bin/md2confluence.py $@
